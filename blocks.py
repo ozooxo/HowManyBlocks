@@ -9,12 +9,12 @@ from pyglet.gl import *
 def xyz2xy(xyz, View):
     if View == 'Front': return xyz[0], xyz[1]
     elif View == 'Top': return xyz[0], -xyz[2]
-    elif View == 'Right': return xyz[1], -xyz[2]
+    elif View == 'Right': return -xyz[2], xyz[1]
 
 def xy2xyz(xy, View, z=0):
     if View == 'Front': return xy[0], xy[1], z
     elif View == 'Top': return xy[0], z, -xy[1]
-    elif View == 'Right': return z, xy[0], -xy[1]
+    elif View == 'Right': return z, xy[1], -xy[0]
 
 ################################################################
 
