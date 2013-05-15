@@ -3,59 +3,52 @@ from __future__ import print_function
 
 import random
 
-def BlockSet2BoundarySet(BlockSet):
+__all__ = ["GenerateCubeSet"]
+
+def CubeSet2BoundarySet(CubeSet):
     BoundarySet = set()
-    for Block in BlockSet:
-        BoundarySet.add((Block[0]+1, Block[1], Block[2]))
-        BoundarySet.add((Block[0]-1, Block[1], Block[2]))
-        BoundarySet.add((Block[0], Block[1]+1, Block[2]))
-        BoundarySet.add((Block[0], Block[1]-1, Block[2]))
-        BoundarySet.add((Block[0], Block[1], Block[2]+1))
-        BoundarySet.add((Block[0], Block[1], Block[2]-1))
-    return BoundarySet - BlockSet
+    for Cube in CubeSet:
+        BoundarySet.add((Cube[0]+1, Cube[1], Cube[2]))
+        BoundarySet.add((Cube[0]-1, Cube[1], Cube[2]))
+        BoundarySet.add((Cube[0], Cube[1]+1, Cube[2]))
+        BoundarySet.add((Cube[0], Cube[1]-1, Cube[2]))
+        BoundarySet.add((Cube[0], Cube[1], Cube[2]+1))
+        BoundarySet.add((Cube[0], Cube[1], Cube[2]-1))
+    return BoundarySet - CubeSet
 
-#print(BlockSet2BoundarySet({(0,0,0), (1,0,0)}))
+def RandomCubeGenerator(numCubes):
+    CubeSet = {(0,0,0)}
+    while len(CubeSet) < numCubes:
+        NewCube = random.choice(list(CubeSet2BoundarySet(CubeSet)))
+        CubeSet.add(NewCube)
+    return CubeSet
 
-#def NewBlock2BoundarySet(NewBlock, BlockSet, oldBoundarySet):
-#    BoundarySet = oldBoundarySet.union(BlockSet2BoundarySet({NewBlock}))
-#    return BoundarySet - BlockSet
-
-def RandomBlockGenerator(numBlocks):
-    BlockSet = {(0,0,0)}
-    while len(BlockSet) < numBlocks:
-        NewBlock = random.choice(list(BlockSet2BoundarySet(BlockSet)))
-        BlockSet.add(NewBlock)
-    return BlockSet
-
-#print(RandomBlockGenerator(4))
-
-def BlockSet2oneDimProjection(BlockSet):
+def CubeSet2oneDimProjection(CubeSet):
     xSet, ySet, zSet = set(), set(), set()
-    for Block in BlockSet:
-        xSet.add(Block[0])
-        ySet.add(Block[1])
-        zSet.add(Block[2])
+    for Cube in CubeSet:
+        xSet.add(Cube[0])
+        ySet.add(Cube[1])
+        zSet.add(Cube[2])
     return (xSet, ySet, zSet)
 
-def BlockSet2twoDimProjection(BlockSet):
+def CubeSet2twoDimProjection(CubeSet):
     xySet, yzSet, xzSet = set(), set(), set()
-    for Block in BlockSet:
-        xySet.add((Block[0], Block[1]))
-        yzSet.add((Block[1], Block[2]))
-        xzSet.add((Block[0], Block[2]))
+    for Cube in CubeSet:
+        xySet.add((Cube[0], Cube[1]))
+        yzSet.add((Cube[1], Cube[2]))
+        xzSet.add((Cube[0], Cube[2]))
     return (xySet, yzSet, xzSet)
 
-#print(BlockSet2twoDimProjection(RandomBlockGenerator(4)))
+def RandomCubeSet2FilledCubeSet(RandomCubeSet):
+    xSet, ySet, zSet = CubeSet2oneDimProjection(RandomCubeSet)
+    xySet, yzSet, xzSet = CubeSet2twoDimProjection(RandomCubeSet)
 
-def RandomBlockSet2FilledBlockSet(RandomBlockSet):
-    xSet, ySet, zSet = BlockSet2oneDimProjection(RandomBlockSet)
-    xySet, yzSet, xzSet = BlockSet2twoDimProjection(RandomBlockSet)
-
-    FilledBlockSet = set()
+    FilledCubeSet = set()
     xyz_grid = {(x, y, z) for x in xSet for y in ySet for z in zSet}
     for (x,y,z) in xyz_grid:
         if ((x,y) in xySet) and ((y,z) in yzSet) and ((x,z) in xzSet):
-            FilledBlockSet.add((x,y,z))
-    return FilledBlockSet
+            FilledCubeSet.add((x,y,z))
+    return FilledCubeSet
 
-#print(RandomBlockSet2FilledBlockSet(RandomBlockGenerator(6)))
+def GenerateCubeSet(startNum):
+    return RandomCubeSet2FilledCubeSet(RandomCubeGenerator(startNum))
